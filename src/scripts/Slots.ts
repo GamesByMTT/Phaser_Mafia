@@ -13,6 +13,7 @@ export class Slots extends Phaser.GameObjects.Container {
     // winingMusic!: Phaser.Sound.BaseSound
     resultCallBack: () => void;
     slotFrame!: Phaser.GameObjects.Sprite;
+    lightSprite!: Phaser.GameObjects.Sprite;
     private maskWidth: number;
     private maskHeight: number;
     private symbolKeys: string[];
@@ -23,6 +24,7 @@ export class Slots extends Phaser.GameObjects.Container {
     private reelContainers: Phaser.GameObjects.Container[] = [];
     private connectionTimeout!: Phaser.Time.TimerEvent;
     private reelTweens: Phaser.Tweens.Tween[] = []; // Array for reel tweens
+    private lightBlinkAnimation: Phaser.Tweens.Tween | null = null;
     constructor(scene: Phaser.Scene, uiContainer: UiContainer, callback: () => void, SoundManager : SoundManager) {
         super(scene);
 
@@ -40,6 +42,7 @@ export class Slots extends Phaser.GameObjects.Container {
             gameConfig.scale.width / 5,
             gameConfig.scale.height / 6.5
         );
+        this.createLightSprite();
         // this.add(this.slotMask);
         // Filter and pick symbol keys based on the criteria
         this.symbolKeys = this.getFilteredSymbolKeys();
@@ -103,7 +106,15 @@ export class Slots extends Phaser.GameObjects.Container {
         return this.symbolKeys[randomIndex];
     }
 
-    moveReel() {    
+    moveReel() {   
+        if (this.lightBlinkAnimation) {
+            this.lightBlinkAnimation.stop();
+            this.lightBlinkAnimation.remove();
+            this.lightBlinkAnimation = null;
+        }
+        if (this.lightSprite) {
+            this.lightSprite.setVisible(false);
+        }
         const initialYOffset = (this.slotSymbols[0][0].totalSymbol - this.slotSymbols[0][0].visibleSymbol - this.slotSymbols[0][0].startIndex) * this.slotSymbols[0][0].spacingY;
         setTimeout(() => {
             for (let i = 0; i < this.reelContainers.length; i++) {
@@ -212,6 +223,7 @@ export class Slots extends Phaser.GameObjects.Container {
                     const animationId = `symbol_anim_${ResultData.gameData.ResultReel[x][y]}`;
                     if (this.slotSymbols[y] && this.slotSymbols[y][x]) {
                         this.winMusic("winMusic");
+                        this.createLightBlinkAnimation();
                         this.slotSymbols[y][x].playAnimation(animationId);
                     }
                 }
@@ -220,6 +232,39 @@ export class Slots extends Phaser.GameObjects.Container {
     }
     winMusic(key: string){
         this.SoundManager.playSound(key)
+    }
+
+    private createLightSprite() {
+        if (!this.lightSprite) {
+            this.lightSprite = this.scene.add.sprite(gameConfig.scale.width/2, gameConfig.scale.height/2.2, "light");
+            this.lightSprite.setScale(0.85);
+            this.lightSprite.setDepth(100); // Ensure it's above other elements
+            this.lightSprite.setVisible(false); // Hide it initially
+            this.add(this.lightSprite); // Add it to this container
+        }
+    }
+
+    private createLightBlinkAnimation() {
+        // Stop any existing blink animation
+        if (this.lightBlinkAnimation) {
+            this.lightBlinkAnimation.stop();
+        }
+
+        if (this.lightSprite) {
+            this.lightSprite.setVisible(true);
+            this.lightSprite.setAlpha(1);
+
+            // Create new blink animation
+            this.lightBlinkAnimation = this.scene.tweens.add({
+                targets: this.lightSprite,
+                alpha: { from: 1, to: 0 },
+                duration: 500,
+                yoyo: true,
+                repeat: -1
+            });
+        } else {
+            console.error("Light sprite is not initialized");
+        }
     }
     
 }

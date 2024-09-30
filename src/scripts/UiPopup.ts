@@ -179,11 +179,9 @@ export class UiPopups extends Phaser.GameObjects.Container {
         });
 
         musicToggleButton.on('pointerdown', () => {
-            console.log(musicOn, "musicOn");
-            
+    
             musicOn = !musicOn;
 
-            console.log(musicOn, "afterchange");
             this.adjustMusicVolume(musicOn ? 1 : 0); // Assuming 1 is full volume
             musicToggleButton.setTexture(musicOn ? 'MusictoggleOn' : 'MusictoggleOff');
         });

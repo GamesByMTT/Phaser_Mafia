@@ -1,9 +1,11 @@
 import Phaser, { Scene } from "phaser";
 import { Globals, initData, ResultData } from "./Globals";
 import { gameConfig } from "./appconfig";
+import SoundManager from "./SoundManager";
 
 const TextStyle =  {color:"#ffffff", fontSize: "40px", fontFamily: 'CarterOne', align:"center", wordWrap:{ width: 300, useAdvancedWrap: true }}
 const smallTextStyle =  {color:"#ffffff", fontSize: "22px", fontFamily: 'CarterOne', align:"center", wordWrap:{ width: 200, useAdvancedWrap: true }}
+const bonusTextStyle =  {color:"#ffffff", fontSize: "40px", fontFamily: 'CarterOne', align:"left", wordWrap:{ width: 550, useAdvancedWrap: true }}
 
 export default class InfoScene extends Scene{
     pageviewContainer!: Phaser.GameObjects.Container;
@@ -15,10 +17,12 @@ export default class InfoScene extends Scene{
     infoCross!: Phaser.GameObjects.Sprite
     currentPageIndex: number = 0;
     pages: Phaser.GameObjects.Container[] = [];
+    soundManager!: SoundManager;
     constructor(){
         super({key: 'InfoScene'})
     }
     create(){
+        this.soundManager = new SoundManager(this);
         const {width, height} =  this.cameras.main
         this.SceneBg = new Phaser.GameObjects.Sprite(this, width / 2, height / 2, 'winTableBg')
         .setDisplaySize(width, height)
@@ -35,14 +39,17 @@ export default class InfoScene extends Scene{
         this.infoCross = new Phaser.GameObjects.Sprite(this, gameConfig.scale.width * 0.9, gameConfig.scale.height * 0.06, "exitButton").setInteractive()
         const winHeading = new Phaser.GameObjects.Sprite(this, gameConfig.scale.width/2, gameConfig.scale.height * 0.18, "winTableHeading");
         this.infoCross.on('pointerdown', ()=>{
+            this.buttonMusic("buttonpressed")
             if(Globals.SceneHandler?.getScene("InfoScene")){
                 Globals.SceneHandler.removeScene("InfoScene")
             }
         });
         this.leftArrow.on('pointerdown', ()=>{
+            this.buttonMusic("buttonpressed")
             this.goToPreviousPage();
         })
         this.rightArrow.on('pointerdown', ()=>{
+            this.buttonMusic("buttonpressed")
             this.goToNextPage()
         })
         this.pageviewContainer.add([this.SceneBg, winHeading, this.leftArrow, this.rightArrow, this.infoCross])
@@ -65,37 +72,21 @@ export default class InfoScene extends Scene{
             { x: 1300, y: 600 }, //
         ]
 
-        initData.UIData.symbols.forEach((symbol, symbolIndex) => {
-            // Get the corresponding infoIcon position
-            const iconPosition = infoIcons[symbolIndex];
+        const prefix1 = this.add.sprite(450, 620, "prefix").setOrigin(0.5)
+        const symbols1Text = this.add.text(510, 520, "100 \n 50 \n 20", TextStyle)
+        symbols1Text.setLineSpacing(25)
+        const prefix2 = this.add.sprite(750, 620, "prefix").setOrigin(0.5)
+        const symbols2Text = this.add.text(810, 520, "150 \n 100 \n 40", TextStyle)
+        symbols2Text.setLineSpacing(25)
+        const prefix3 = this.add.sprite(1050, 620, "prefix").setOrigin(0.5)
+        const symbols3Text = this.add.text(1110, 520, "100 \n 50 \n 20", TextStyle)
+        symbols3Text.setLineSpacing(25)
+        const prefix4 = this.add.sprite(1350, 620, "prefix").setOrigin(0.5)
+        const symbols4Text = this.add.text(1410, 520, "100 \n 50 \n 20", TextStyle)
+        symbols4Text.setLineSpacing(25)
 
-            if (!iconPosition) return; // Avoid undefined positions
-            
-            symbol.multiplier.forEach((multiplierValueArray, multiplierIndex, array) => {
-                if (Array.isArray(multiplierValueArray)) {
-                    const multiplierValue = multiplierValueArray[0];
-                    if (multiplierValue > 0) {  // Skip the loop iteration if multiplierValue is 0
-                        // Determine the text (e.g., '5x', '4x', '2x')
-                        // const prefix = [5, 4, 3][multiplierIndex]; // Customize this if needed
-                        const prefix = (5 - multiplierIndex) + "x"; // No need for an array lookup
-                        // console.log(multiplierValue, "multiplierValue");
-                        let text = `${prefix} - ${multiplierValue} \n`;            
-                        // Create the text object
-                        const textObject = this.add.text(
-                            iconPosition.x, // X position (you might want to offset this)
-                            iconPosition.y + multiplierIndex * 60, // Y position (spacing between lines)
-                            text,
-                            { fontFamily: "CarterOne", fontSize: '40px', color: '#fff' } // Customize text style
-                        );
-                        // Optionally adjust the position further based on requirements
-                        textObject.setLineSpacing(100)
-                        textObject.setOrigin(0, 0.5); // Center the text if needed
-                        this.pages[1].add(textObject);
-                    }
-                }
-            });
-        });
-        this.pages[1].add([symbol1, symbol2, symbol3, symbol4]);
+    
+        this.pages[1].add([symbol1, prefix1, symbols1Text, symbol2, prefix2, symbols2Text, symbol3, prefix3, symbols3Text, symbol4, prefix4, symbols4Text]);
         this.pageviewContainer.add(this.pages[1]);
 
         this.pages[2] = this.add.container(0, 0);  // Position off-screen initially
@@ -110,29 +101,18 @@ export default class InfoScene extends Scene{
         symbols6Text.setLineSpacing(25)
         const symbol7 = this.add.sprite(1100, 400, "inofIcon7").setScale(0.75)
         const prefix7 = this.add.sprite(1050, 620, "prefix").setOrigin(0.5)
-        const symbols7Text = this.add.text(1110, 520, "100 \n 50 \n 20", TextStyle)
+        const symbols7Text = this.add.text(1110, 520, "150 \n 100 \n 40", TextStyle)
         symbols7Text.setLineSpacing(25)
         const symbol8 = this.add.sprite(1400, 400, "inofIcon8").setScale(0.75)
         const prefix8 = this.add.sprite(1350, 620, "prefix").setOrigin(0.5)
-        const symbols8Text = this.add.text(1410, 520, "100 \n 50 \n 20", TextStyle)
+        const symbols8Text = this.add.text(1410, 520, "150 \n 100 \n 40", TextStyle)
         symbols8Text.setLineSpacing(25)
       
-        // const BonusSceneHeading = this.add.text(this.scale.width/2.3, 300, "BONUS GAME", {fontFamily:"crashLandingItalic", color: "#ffffff", fontSize: "80px"})
-
-        // const bonusGameImg = this.add.sprite(this.scale.width/2.9, 550, "BonusScenegame").setScale(0.25)
-
-        // const BonusSceneDescription = this.add.text(this.scale.width/1.95, 430, "Triggers bonus game if 5 icons appear anywhere on the result matrix.", {fontFamily:"crashLandingItalic", align:"center", color: "#ffffff", fontSize: "60px", wordWrap:{ width: 600, useAdvancedWrap: true }})
-        
         this.pages[2].add([symbol5, prefix5, symbols5Text, symbol6, prefix6, symbols6Text, symbol7, prefix7,  symbols7Text, symbol8, prefix8, symbols8Text])
         this.pageviewContainer.add(this.pages[2]);
 
         this.pages[3] = this.add.container(0, 0);  // Position off-screen initially
 
-        // const riskGameHeading = this.add.text(this.scale.width/2.3, 270, "Risk Game", {fontFamily:"crashLandingItalic", color: "#ffffff", fontSize: "80px"})
-
-        // const riskGameImg = this.add.sprite(this.scale.width/2.9, 550, "riskGameimage").setScale(0.25)
-
-        // const riskGameDescription = this.add.text(this.scale.width/1.95, 385, `The player can click the "Double" Button After a win to activate the risk game.  the player faces off against the dealer with the total four cards. the player selects one of three face-down cards first, then the dealer reveals their card, if the player chosen card is higher in value than the delear's card, the players winnings are doubled. If not then player receives nothing.`, {fontFamily:"crashLandingItalic", align:"center", color: "#ffffff", fontSize: "40px", wordWrap:{ width: 550, useAdvancedWrap: true }})
         const symbol9 = this.add.sprite(500, 400, "inofIcon9").setScale(0.75)
        
         const symbols9Text = this.add.text(410, 520, "Triggres bonus game if 4 or 5 symbols appear in anywhere in reel.", smallTextStyle)
@@ -155,6 +135,14 @@ export default class InfoScene extends Scene{
         this.pageviewContainer.add(this.pages[3]);
 
         this.pages[4] = this.add.container(0, 0);  // Position off-screen initially
+
+        const riskGameHeading = this.add.text(this.scale.width/2.6, 270, "Bonus Game", {fontFamily:"CarterOne", color: "#ffffff", fontSize: "80px"})
+
+        const riskGameImg = this.add.sprite(this.scale.width/2.9, 550, "bonusSceneInfo").setScale(0.5)
+
+        const riskGameDescription = this.add.text(this.scale.width/2, 400, `In this game , you'll se six similar suitcases. Select them one by one o reveal your prize until game is over.`, bonusTextStyle)
+        
+        this.pages[4].add([riskGameHeading, riskGameImg, riskGameDescription])
 
         this.pageviewContainer.add(this.pages[4]);
 
@@ -181,5 +169,8 @@ export default class InfoScene extends Scene{
             this.currentPageIndex--;
             this.pages[this.currentPageIndex].setVisible(true);
         }
+    }
+    buttonMusic(key: string){
+        this.soundManager.playSound(key)
     }
 }

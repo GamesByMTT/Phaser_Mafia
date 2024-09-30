@@ -23,14 +23,24 @@ export default class SoundManager {
         }
     }
 
-    public playSound(key: string) {
+    public playSound(key: string, volume?: number) {
         if(this.soundEnabled){
-            if (key === 'backgroundMusic') {                
-                Globals.soundResources[key].loop(true);
-                Globals.soundResources[key].play();
-            } else {
-                Globals.soundResources[key].loop(false); // Ensure looping is off for non-background sounds
-                Globals.soundResources[key].play();
+            if (this.soundEnabled) {
+                const sound = Globals.soundResources[key];
+                if (sound) {
+                    if (volume !== undefined) {
+                        // Set the user volume if provided
+                        sound.userVolume = Phaser.Math.Clamp(volume, 0, 0.2);
+                        this.applyVolumeToSound(sound);
+                    }
+        
+                    if (key === 'backgroundMusic') {
+                        sound.loop(true);
+                    } else {
+                        sound.loop(false); // Ensure looping is off for non-background sounds
+                    }
+                    sound.play();
+                }
             }
         }
     }
@@ -69,20 +79,19 @@ public setMusicEnabled(enabled: boolean) {
 public setMasterVolume(volume: number) {
     Globals.masterVolume = Phaser.Math.Clamp(volume, 0, 1);
     Object.entries(Globals.soundResources).forEach(([key, sound]) => {
-        if (key !== 'backgroundMusic') {
+        if (key == 'backgroundMusic') {
             this.applyVolumeToSound(sound);
         }
     });
 }
 
 public setVolume(key: string, volume: number) {
-    const sound = Globals.soundResources[key];
-    if (sound) {
-        sound.userVolume = Phaser.Math.Clamp(volume, 0, 1);
-        console.log("sound in soundmmanager", sound);
-        
-        this.applyVolumeToSound(sound);
-    }
+    Globals.masterVolume = Phaser.Math.Clamp(volume, 0, 1);
+    Object.entries(Globals.soundResources).forEach(([key, sound]) => {
+        if (key !== 'backgroundMusic') {
+            this.applyVolumeToSound(sound);
+        }
+    });
 }
 
 private applyVolumeToSound(sound: Howl & { userVolume?: number }) {

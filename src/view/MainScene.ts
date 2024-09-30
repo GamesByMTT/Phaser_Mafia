@@ -4,6 +4,8 @@ import { UiContainer } from '../scripts/UiContainer';
 import { LineGenerator } from '../scripts/Lines';
 import { UiPopups } from '../scripts/UiPopup';
 import LineSymbols from '../scripts/LineSymbols';
+import BonusScene from './BonusScene';
+
 import { 
     Globals, 
     ResultData, 
@@ -38,14 +40,16 @@ export default class MainScene extends Scene {
         this.mainContainer = this.add.container();
 
         this.soundManager = new SoundManager(this);
-        console.log("MainScene Loaded on Mafia Climbing Monkey");
+        console.log("MainScene Loaded on Mafia");
 
         this.gameBg = this.add.sprite(width / 2, height / 2, 'gameBg')
             .setDepth(0)
         this.reelBg = this.add.sprite(width/2, height/2.2, "reelBg").setScale(0.85);
+        const lamp = this.add.sprite(width/2, height/2.2, "lamp").setScale(0.85)
         this.logo = this.add.sprite(width/2, gameConfig.scale.height * 0.09, "mafiaLogo")
-
-        this.mainContainer.add([this.gameBg, this.reelBg, this.logo]);
+        const pumpLeftImage = this.add.sprite(width/4.6, height * 0.85, "pump")
+        const pumpRightImage = this.add.sprite(width/1.3, height * 0.85, "pump")
+        this.mainContainer.add([this.gameBg, this.reelBg, lamp, this.logo, pumpLeftImage, pumpRightImage]);
         this.soundManager.playSound("backgroundMusic");
 
         this.uiContainer = new UiContainer(this, () => this.onSpinCallBack(), this.soundManager);
@@ -96,6 +100,15 @@ export default class MainScene extends Scene {
 
     // Handle ResultData logic separately
     private handleResultData() {
+
+        if (ResultData.gameData.isBonus) {
+            if (this.uiContainer.isAutoSpinning) {
+                this.uiContainer.autoBetBtn.emit('pointerdown');
+                this.uiContainer.autoBetBtn.emit('pointerup'); 
+            }
+            Globals.SceneHandler?.addScene('BonusScene', BonusScene, true);
+        }
+
         this.uiContainer.currentWiningText.updateLabelText(ResultData.playerData.currentWining.toString());
         currentGameData.currentBalance = ResultData.playerData.Balance;
         let betValue = (initData.gameData.Bets[currentGameData.currentBetIndex]) * 20;
@@ -119,7 +132,7 @@ export default class MainScene extends Scene {
 
     // Function to show win popup
     private showWinPopup(winAmount: number, spriteKey: string) {
-        const inputOverlay = this.add.rectangle(0, 0, this.cameras.main.width, this.cameras.main.height, 0x000000, 0.7)
+        const inputOverlay = this.add.rectangle(0, 0, this.cameras.main.width, this.cameras.main.height, 0x000000, 0.85)
             .setOrigin(0, 0)
             .setDepth(9)
             .setInteractive();
@@ -127,18 +140,32 @@ export default class MainScene extends Scene {
         inputOverlay.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             pointer.event.stopPropagation(); 
         });
-
-        const winBg = this.add.sprite(gameConfig.scale.width/2, gameConfig.scale.height/2, "messagePopup").setDepth(11).setOrigin(0.5).setScale(0.7)
-        const winSprite = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY - 275, spriteKey).setDepth(13);
-        const winAmountPanel = this.add.sprite(gameConfig.scale.width/2, gameConfig.scale.height/2 , "SoundToggleBg").setDepth(11)
+        const winSprite = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY - 100, spriteKey).setDepth(13);
+        const winAmountPanel = this.add.sprite(gameConfig.scale.width/2.05, gameConfig.scale.height/1.15 , "recieveButton").setDepth(11)
             // winAmountPanel.setPosition()
             winAmountPanel.setOrigin(0.5)
     
             // Create the text object to display win amount
-            const winText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, '0', {
-                font: '45px',
-                color: '#FFFFFF'
+            const winText = this.add.text(this.cameras.main.centerX, gameConfig.scale.height/1.4, '0', {
+                font: '70px',
+                color: '#FFFFFF',
+                fontFamily: "CarterOne"
             }).setDepth(11).setOrigin(0.5);
+            const winDollar = this.add.text(this.cameras.main.centerX - 95, gameConfig.scale.height/1.4, '$', {
+                font: '70px',
+                color: '#FFFFFF',
+                fontFamily: "CarterOne"
+            }).setDepth(11).setOrigin(0.5);
+
+            this.tweens.add({
+                targets: winSprite,
+                scale: 1.2,
+                duration: 800,
+                yoyo: true,
+                repeat: -1,
+                ease: 'Sine.easeInOut',
+                delay: 200 
+            });
     
             // Tween to animate the text increment from 0 to winAmount
             this.tweens.addCounter({
@@ -153,7 +180,7 @@ export default class MainScene extends Scene {
                     // Automatically close the popup after a few seconds
                     this.time.delayedCall(4000, () => {
                         inputOverlay.destroy();
-                        winBg.destroy();
+                        winDollar.destroy();
                         winAmountPanel.destroy();
                         winText.destroy();
                         winSprite.destroy();

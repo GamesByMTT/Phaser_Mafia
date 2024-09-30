@@ -25,7 +25,9 @@ export const LoaderConfig = {
     settingHeading: "src/sprites/SettingPopupBg.png",
     mafiaLogo: "src/sprites/mafiaLogo.png",
     numOfLines: "src/sprites/numberofLines.png",
-
+    pump: "src/sprites/pump.png",
+    lamp:"src/sprites/lamps.png",
+    light: "src/sprites/light.png",
 
     exitButton: "src/sprites/ExitButton.png",
     exitButtonPressed: "src/sprites/ExitButtonHover.png",
@@ -55,9 +57,28 @@ export const LoaderConfig = {
     MusictoggleOff: "src/sprites/toggleOff.png",
     MusictoggleOn: "src/sprites/toggleOn.png",
     SoundToggleBg: "src/sprites/SoundToggleBg.png",
+    recieveButton: "src/sprites/receiveButton.png",
     SOUNDS: "src/sprites/soundText.png",
     MUSIC: "src/sprites/musicText.png",
     settingText: "src/sprites/SettingsText.png",
+    BonusBgImage: "src/sprites/BonusBgImage.jpg",
+    closedSuitCase: "src/sprites/closed.png",
+
+    openSuitCase0: "src/sprites/suitCase0.png",
+    openSuitCase1: "src/sprites/suitCase1.png",
+    openSuitCase2: "src/sprites/suitCase2.png",
+    openSuitCase3: "src/sprites/suitCase3.png",
+    openSuitCase4: "src/sprites/suitCase4.png",
+    openSuitCase5: "src/sprites/suitCase5.png",
+    openSuitCase6: "src/sprites/suitCase6.png",
+    openSuitCase7: "src/sprites/suitCase7.png",
+    openSuitCase8: "src/sprites/suitCase8.png",
+    openSuitCase9: "src/sprites/suitCase9.png",
+    openSuitCase10: "src/sprites/suitCase10.png",
+    centerEmpty : "src/sprites/centerempty.png",
+    centerMoney: "src/sprites/centermoney.png",
+    gunLeft: "src/sprites/GunLeft.png",
+    gunRight: "src/sprites/GunRight.png",
 
     headingImage: "src/sprites/PayTable.png",
     scrollBg: "src/sprites/ScrollBar.png",
@@ -71,6 +92,8 @@ export const LoaderConfig = {
     hugeWinPopup: "src/sprites/hugeWinPopup.png",
     megaWinPopup: "src/sprites/megaWinPopup.png",
     jackpotPopup: "src/sprites/jackpotPopup.png",
+    bonusSceneInfo: "src/sprites/BonusScene.jpg",
+    bonusLogo: "src/sprites/BonusGameHeading.png",
 
     yesButton:"src/sprites/yesButton.png",
     yesButtonHover: "src/sprites/yesButtonHover.png",
@@ -424,10 +447,12 @@ export const fontData = {
 }
 
 export const LoaderSoundConfig: any = {
-        backgroundMusic: "src/sounds/Teaser.wav",
+        backgroundMusic: "src/sounds/Teaser.mp3",
         onSpin :  "/src/sounds/slot-machine-loop.mp3",
         spinButton: "src/sounds/spin.wav",
         winMusic: "src/sounds/JackpotWinner.wav",
         buttonpressed: "src/sounds/Game-Button.mp3",
+        bonusBg: "src/sounds/bonusbg.mp3",
+        bonusWin: "src/sounds/BonusWin.mp3"
  
 };
