@@ -22,7 +22,6 @@ export const LoaderConfig = {
     settingBtnH :  "/src/sprites/ButtonSettingsHover.png",
     infoBtn :  "/src/sprites/ButtonInfo.png",
     infoBtnH :  "/src/sprites/ButtonInfoHover.png", 
-    settingHeading: "src/sprites/SettingPopupBg.png",
     mafiaLogo: "src/sprites/mafiaLogo.png",
     numOfLines: "src/sprites/numberofLines.png",
     pump: "src/sprites/pump.png",
@@ -80,14 +79,9 @@ export const LoaderConfig = {
     gunLeft: "src/sprites/GunLeft.png",
     gunRight: "src/sprites/GunRight.png",
 
-    headingImage: "src/sprites/PayTable.png",
     scrollBg: "src/sprites/ScrollBar.png",
-    scroller:"src/sprites/Roller.png",
     minorSymbolsHeading: "src/sprites/MinorSymbols.png",
     majorSymbolHeading: "src/sprites/MajorSymbolsHeading.png",
-    specialSymBolHeading: "src/sprites/SpecialSymbolHeading.png",
-    payLines: "src/sprites/PayLines.png",
-    payLinesHeading: "src/sprites/PayLinesHeading.png",
     bigWinPopup:"src/sprites/bigWinPopup.png",
     hugeWinPopup: "src/sprites/hugeWinPopup.png",
     megaWinPopup: "src/sprites/megaWinPopup.png",
@@ -433,9 +427,6 @@ export const LoaderConfig = {
     line6: "src/sprites/line7.png",
     line7: "src/sprites/line8.png",
     line8: "src/sprites/line9.png",
-
-    megawinAnimBg: "src/sprites/rays.png",
-    megawinStar: "src/sprites/stars.png",
 }
 
 export const staticData = {
